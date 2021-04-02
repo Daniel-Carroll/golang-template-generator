@@ -1,0 +1,169 @@
+include:
+  - project: 'heb-engineering/teams/enterprise/digital-fulfillment/adventure-galley/df-gitlab-pipeline'
+    ref: 0.0.4
+    file: .gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+
+stages:
+  - test
+  - compile
+  - build-image
+  - build-flyway
+  - scan-image
+  - scan-flyway
+  - build-manifests
+  - upload-manifests
+  - deploy-nonprod
+  - create-nonprod-nr-deployment
+  - approve-nonprod
+  - promote-image
+  - open-rfc
+  - deploy-prod
+  - close-rfc
+  - create-prod-nr-deployment
+
+variables:
+  DF_APP: {{ app_name }}
+  DF_FLYWAY: {{ app_name }}-db-migration
+  DS_DEFAULT_ANALYZERS: 'retire.js, gemnasium'
+  NONPROD_PROJECT_ID: constellation-nonprod
+  DOCKERFILE_PATH: $CI_PROJECT_DIR/cmd/{{ app_name }}/runtime.Dockerfile
+  DOCKER_BUILD_CONTEXT: $CI_PROJECT_DIR
+  {{ namespace }}_NONPROD: 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
+  {{ namespace }}_PROD: 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
+  NONPROD_KEY_VAR: {{ namespace }}_NONPROD
+  PROD_KEY_VAR: {{ namespace }}_PROD
+  DF_ART_BUCKET: constellation-nonprod-df-manifests
+  OVERRIDE_CANARY: 'true'
+  PROD_PROJECT_ID: constellation-prod-242820
+  NONPROD_KMS_LOCATION: global
+  NONPROD_KMS_KEYRING: {{ namespace }}-key-ring
+  NONPROD_KMS_KEY: {{ namespace }}-crypto-key
+  PROD_KMS_LOCATION: global
+  PROD_KMS_KEYRING: {{ namespace }}-key-ring
+  PROD_KMS_KEY: {{ namespace }}-crypto-key
+  CHANGE_OWNER: {{ change_owner }}
+  RFC_SERVICE: Find_and_Serve_Tool_(FAST)_Service
+  RFC_TITLE: {{ app_name }} Service RFC
+
+compile:
+  stage: compile
+  image: us.gcr.io/constellation-utils/golang-alp:latest
+  script: ./scripts/build-cb.sh
+  needs: []
+
+build-image:
+  stage: build-image
+  extends: .build-image
+  variables:
+    DOCKER_IMAGE: $DF_APP
+    DOCKERFILE_PATH: $CI_PROJECT_DIR/cmd/fulfillment/runtime.Dockerfile
+    DOCKER_BUILD_CONTEXT: $CI_PROJECT_DIR
+    script: ./scripts/build-cb.sh
+  needs:
+    - compile
+
+build-flyway:
+  stage: build-flyway
+  extends: .build-image
+  variables:
+    DOCKER_IMAGE: $DF_FLYWAY
+    DOCKERFILE_PATH: $CI_PROJECT_DIR/schema/flyway/Dockerfile
+    DOCKER_BUILD_CONTEXT: $CI_PROJECT_DIR/schema/flyway
+  needs: []
+
+scan-image:
+  stage: scan-image
+  extends: .scan-image
+  variables:
+    DOCKER_IMAGE: $DF_APP
+  needs: 
+    - build-image
+
+scan-flyway:
+  stage: scan-flyway
+  extends: .scan-image
+  variables:
+    DOCKER_IMAGE: $DF_FLYWAY
+  needs: 
+    - build-flyway
+
+build-manifests:
+  stage: build-manifests
+  extends: .build-manifests
+  needs: []
+
+upload-manifests:
+  stage: upload-manifests
+  extends: .upload-manifests
+  needs:
+    - build-manifests
+  dependencies:
+    - build-manifests
+
+deploy-nonprod:
+  stage: deploy-nonprod
+  extends: .deploy-nonprod
+  needs:
+    - build-manifests
+    - scan-image
+  dependencies:
+    - build-manifests
+
+create-nonprod-nr-deployment:
+  stage: create-nonprod-nr-deployment
+  extends: .create-newrelic-deployment
+  needs:
+    - deploy-nonprod
+  variables:
+    DF_NR_APP_ID: 382631598
+
+approve-nonprod:
+  stage: approve-nonprod
+  extends: .approve-nonprod
+  needs:
+    - deploy-nonprod
+
+promote-image:
+  stage: promote-image
+  extends: .promote-image
+  variables:
+    DOCKER_IMAGE: $DF_APP
+    DOCKERFILE_PATH: $CI_PROJECT_DIR/cmd/fulfillment/runtime.Dockerfile
+    DOCKER_BUILD_CONTEXT: $CI_PROJECT_DIR
+  needs:
+    - approve-nonprod
+    - build-image
+
+open-rfc:
+  stage: open-rfc
+  extends: .open-rfc
+  needs:
+    - promote-image
+
+deploy-prod:
+  stage: deploy-prod
+  extends: .deploy-prod
+  needs:
+    - approve-nonprod
+    - build-manifests
+    - promote-image
+  dependencies:
+    - build-manifests
+
+close-rfc:
+  stage: close-rfc
+  extends: .close-rfc
+  needs:
+    - open-rfc
+    - deploy-prod
+  dependencies:
+    - open-rfc
+
+create-prod-nr-deployment:
+  stage: create-prod-nr-deployment
+  extends: .create-newrelic-deployment
+  needs:
+    - deploy-prod
+  variables:
+    DF_NR_APP_ID: 422960725

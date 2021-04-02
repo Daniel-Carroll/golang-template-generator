@@ -1,1 +1,1 @@
-# golang-template-generator
+Golang Scaffolder Readme

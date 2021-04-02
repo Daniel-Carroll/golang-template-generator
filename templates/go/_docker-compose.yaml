@@ -1,0 +1,60 @@
+# run with `docker-compose up -d`
+# to unmount volume and reinitialize schema/data, run with `docker-compose down -v`
+version: '3.5'
+services:
+  efc-fulfillment:
+    container_name: {{ app_name }}
+    build: 
+      context: .
+      dockerfile: local.Dockerfile
+    restart: always
+    env_file: 
+      - local-properties.env
+    ports:
+      - 3000:3000
+    command: ./scripts/build-local "{{ app_name }}"
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+    depends_on:
+      - local_db
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/usr/local/go/src/{{ module }}
+      # Mount gCloud configuration
+      - ~/.config/gcloud/:/root/.config/gcloud/
+      # Mount dependencies
+      - ~/go/src/github.com:/go/src/github.com
+    networks:
+      - fleet
+  # Image for flyway. Waits for the database to spin up, then applies migrations in all directories under the sql folder
+  flyway:
+    container_name: {{ app_name }}_flyway
+    build: 
+      context: ./schema/flyway/
+      dockerfile: local.Dockerfile
+    command: -connectRetries=60 -url=jdbc:postgresql://local_db/{{ app_name }}?useSSL=false -user=admin -password=g00dp4ss! migrate
+    volumes:
+      # - ./schema/flyway/sql:/flyway/sql
+      - ./schema/flyway/conf:/flyway/conf
+    depends_on:
+      - local_db
+    networks:
+      - fleet
+  local_db:
+    image: postgres
+    restart: always
+    env_file:
+      - local-properties.env
+    volumes:
+      - db_data:/var/lib/postgres/data
+    ports:
+      - "5432:5432"
+    networks:
+      - {{ namespace }}
+networks:
+  {{ namespace }}:
+    name: {{ namespace }}_network
+volumes:
+  db_data:
