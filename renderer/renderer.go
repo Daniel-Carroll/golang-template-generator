@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"path/filepath"
 
@@ -70,6 +71,7 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
+
 		log.Info("Output:", out)
 
 		err = os.MkdirAll(filepath.Join(r.Config.OutputDirectory, out), 0755)
@@ -87,6 +89,9 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
+
+		path = strings.Replace(path, "_", "", -1)
+		log.Info("Output file:", path)
 
 		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, path), []byte(out), 0755)
 		if err != nil {
