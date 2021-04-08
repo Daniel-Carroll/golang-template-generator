@@ -12,20 +12,13 @@ type Config struct {
 	// AppName : name of your application
 	AppName string
 
-	// RepoUrl : url where your repo will reside
-	RepoUrl string
-
-	// Module : golang module name
-	Module string
-
-	// Namespace : Kubernetes namespace where project will live
-	Namespace string
+	// Values :
+	Values map[string]interface{}
 }
 
 // New will return Config populated with pre-defined defaults.
 func New() Config {
 	c := Config{}
-	c.OutputDirectory = "./"
-	c.Module = "gitlab.com/heb-engineering"
+	c.OutputDirectory = "./output"
 	return c
 }
