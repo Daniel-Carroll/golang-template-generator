@@ -9,9 +9,6 @@ type Config struct {
 	// OutputDirectory : directory where the generated template will go
 	OutputDirectory string
 
-	// AppName : name of your application
-	AppName string
-
 	// Values :
 	Values map[string]interface{}
 }

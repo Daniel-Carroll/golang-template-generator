@@ -16,7 +16,6 @@ import (
 type options struct {
 	TemplateName    string `short:"t" long:"templateName" description:"Name of template"`
 	OutputDirectory string `short:"o" long:"outputDirectory" description:"Set output directory for template generated code" default:"./"`
-	AppName         string `short:"a" long:"appName" description:"Name Of Application"`
 }
 
 // main runs the command-line parsing and validations. This function will also start the application logic execution.
@@ -27,6 +26,7 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+	log.Info(opts)
 	log.Info(args)
 
 	// Load context from YAML
@@ -41,9 +41,15 @@ func main() {
 
 	// Convert to internal config
 	cfg := config.New()
+	log.Info(opts.OutputDirectory)
 	cfg.Values = viper.AllSettings()
-	cfg.OutputDirectory = opts.OutputDirectory
+	if len(opts.OutputDirectory) == 0 {
+		cfg.OutputDirectory = "./output"
+	} else {
+		cfg.OutputDirectory = opts.OutputDirectory
+	}
 
+	log.Info(cfg.OutputDirectory)
 	renderer, err := renderer.NewRendererFromConfig(cfg)
 
 	templater := app.NewApp(renderer)

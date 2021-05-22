@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	"path/filepath"
 
@@ -32,36 +31,25 @@ func NewRendererFromConfig(cfg config.Config) (Renderer, error) {
 
 func (r Renderer) Render() error {
 	// Application runtime code goes here
+	log.Info("Template Name: ", r.Config.TemplateName)
 	baseTemplateFilepath := filepath.Join("templates", r.Config.TemplateName)
 	baseOutputFilepath := filepath.Join(r.Config.OutputDirectory)
-	log.Info(baseOutputFilepath)
+	log.Info("Base Output", baseOutputFilepath)
 
-	c, err := ioutil.ReadDir(baseTemplateFilepath)
-	log.Info(c)
+	err := filepath.WalkDir(baseTemplateFilepath, r.renderFile)
 
-	log.Info("Printing directory contents")
-	for _, entry := range c {
-		fmt.Println(" ", entry.Name(), entry.IsDir())
-	}
-	err = filepath.WalkDir(baseTemplateFilepath, r.renderFile)
-
-	cmdFilepath := filepath.Join(baseTemplateFilepath, "go", "cmd", "example", "_main.go")
-	cmdOutputPath := filepath.Join(baseOutputFilepath, r.Config.AppName, "cmd", "example", "main.go")
 	//dat, err := ioutil.ReadFile(cmdFilepath)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
 
-	log.Info(cmdFilepath)
-	log.Info(cmdOutputPath)
-
 	return nil
 }
 
 func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 	if d.IsDir() {
-		log.Info("Is Directory")
+		log.Info("Directory Path: ", path)
 		tpl, err := pongo2.FromString(path)
 		if err != nil {
 			return err
@@ -90,9 +78,6 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 			return err
 		}
 
-		path = strings.Replace(path, "_", "", -1)
-		log.Info("Output file:", path)
-
 		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, path), []byte(out), 0755)
 		if err != nil {
 			return err
@@ -109,4 +94,9 @@ func createDirectory(path string, permissions fs.FileMode) error {
 	}
 
 	return nil
+}
+
+// Remove the template part of the path when creating directory
+func trimOutputPath() {
+
 }

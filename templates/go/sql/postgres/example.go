@@ -2,7 +2,7 @@ package postgres
 
 import (
 	log "github.com/sirupsen/logrus"
-	"{{ module }}/domain"
+	"poop-module/domain"
 )
 
 // Ensure that ExampleService is implemented
