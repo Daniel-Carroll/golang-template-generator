@@ -3,9 +3,8 @@ package main
 import (
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
-	"{{ module }}/cmd/fulfillment/utils"
+	"{{ module }}/cmd/{{ app_name }}/utils"
 	"{{ module }}/http"
-	"{{ module }}/sql/postgres"
 )
 
 func main() {
@@ -20,17 +19,7 @@ func main() {
 	var logLevel = cfg.LogLevel
 	initLogger(logLevel)
 
-	db, err := postgres.Open()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// inject database into services
-	exampleService := postgres.NewExampleService(db)
-
 	httpserver := http.NewServer(environment)
-	httpserver.ExampleService = exampleService
 
 	if err := httpserver.Open(); err != nil {
 		log.Fatalf("error: %s", err)

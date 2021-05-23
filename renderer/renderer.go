@@ -2,7 +2,6 @@ package renderer
 
 import (
 	"fmt"
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -39,7 +38,6 @@ func (r Renderer) Render() error {
 
 	err := filepath.WalkDir(baseTemplateFilepath, r.renderFile)
 
-	//dat, err := ioutil.ReadFile(cmdFilepath)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -48,12 +46,11 @@ func (r Renderer) Render() error {
 	return nil
 }
 
-func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
-
+func (r Renderer) renderFile(templatePath string, d os.DirEntry, err error) error {
+	outputPath := strings.Replace(templatePath, "templates/"+r.Config.TemplateName, "", 1)
 	// Check if path is a directory
 	if d.IsDir() {
-
-		tpl, err := pongo2.FromString(path)
+		tpl, err := pongo2.FromString(outputPath)
 		if err != nil {
 			return err
 		}
@@ -63,16 +60,23 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 			return err
 		}
 
-		log.Info("Output")
-		log.Info(out)
-
+		// Create directory in output
 		err = os.MkdirAll(filepath.Join(r.Config.OutputDirectory, out), 0755)
 		if err != nil {
 			return err
 		}
 
 	} else {
-		tpl, err := pongo2.FromFile(path)
+		pathTpl, err := pongo2.FromString(outputPath)
+		if err != nil {
+			return err
+		}
+		pathOut, err := pathTpl.Execute(r.Context)
+		if err != nil {
+			return err
+		}
+
+		tpl, err := pongo2.FromFile(templatePath)
 		if err != nil {
 			return err
 		}
@@ -82,34 +86,15 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 			return err
 		}
 
-		trimmedPath := trimOutputPath(path)
-
-		log.Info("Untrimmed Path")
-		log.Info(path)
-
-		log.Info("Trimmed Path")
+		trimmedPath := strings.Replace(pathOut, "/_", "/", 1)
 		log.Info(trimmedPath)
+
 		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, trimmedPath), []byte(out), 0755)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// Creates a directory at the specified path, returns error if applicable
-func createDirectory(path string, permissions fs.FileMode) error {
-	err := os.MkdirAll(path, permissions)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Remove the template part of the path when creating directory
-func trimOutputPath(path string) string {
-	return strings.Replace(path, "/_", "/", 1)
 }
 
 func trimDirectoryPath(path string) string {

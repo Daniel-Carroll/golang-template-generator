@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"os"
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/heb-engineering/templatr/interfaces"
@@ -28,6 +29,7 @@ func (a App) Start() error {
 	return nil
 }
 
-func Shutdown() {
+func (a App) Shutdown() {
 	// Shutdown contexts, listeners, and such
+	os.Exit(1)
 }

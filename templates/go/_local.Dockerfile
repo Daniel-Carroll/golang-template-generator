@@ -1,8 +1,8 @@
 FROM us.gcr.io/heb-cx-utils/buildpack-golang-alp:latest
 
-WORKDIR /usr/local/go/src/gitlab.com/heb-engineering/teams/enterprise/digital-fulfillment/jolly-roger/df-efc-fulfillment
+WORKDIR /usr/local/go/src/{{ repoUrl }}
 
-COPY . /usr/local/go/src/gitlab.com/heb-engineering/teams/enterprise/digital-fulfillment/jolly-roger/df-efc-fulfillment
+COPY . /usr/local/go/src/{{ repoUrl }}
 
 RUN apk --no-cache add tzdata
 

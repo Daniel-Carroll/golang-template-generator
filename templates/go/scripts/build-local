@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# CompileDaemon for hot reloading. Github found here: https://github.com/githubnemo/CompileDaemon
+CompileDaemon -build="go build ./cmd/{{ app_name }}/" -command="./{{ app_name }}"

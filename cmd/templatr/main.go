@@ -22,12 +22,10 @@ type options struct {
 func main() {
 	// Parse command-line arguments
 	var opts options
-	args, err := flags.ParseArgs(&opts, os.Args[1:])
+	_, err := flags.ParseArgs(&opts, os.Args[1:])
 	if err != nil {
 		os.Exit(1)
 	}
-	log.Info(opts)
-	log.Info(args)
 
 	// Load context from YAML
 	viper.SetConfigName("context")
@@ -37,8 +35,11 @@ func main() {
 	if err != nil {            // Handle errors reading the config file
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-	log.Info(viper.AllSettings())
 
+	if len(opts.TemplateName) == 0 {
+		log.Info("Please Specify Template Name")
+		os.Exit(1)
+	}
 	// Convert to internal config
 	cfg := config.New()
 	cfg.Values = viper.AllSettings()
@@ -48,6 +49,7 @@ func main() {
 	renderer, err := renderer.NewRendererFromConfig(cfg)
 
 	templater := app.NewApp(renderer)
+	defer templater.Shutdown()
 
 	err = templater.Start()
 	if err != nil {
@@ -55,4 +57,6 @@ func main() {
 		log.Error(err)
 		os.Exit(1)
 	}
+
+	log.Info("Template Successfully Generated at: ", renderer.Config.TemplateName)
 }
