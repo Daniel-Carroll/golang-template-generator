@@ -15,7 +15,7 @@ import (
 // options are command-line options that are provided by the user.
 type options struct {
 	TemplateName    string `short:"t" long:"templateName" description:"Name of template"`
-	OutputDirectory string `short:"o" long:"outputDirectory" description:"Set output directory for template generated code" default:"./"`
+	OutputDirectory string `short:"o" long:"outputDirectory" description:"Set output directory for template generated code" default:"./output"`
 }
 
 // main runs the command-line parsing and validations. This function will also start the application logic execution.
@@ -41,15 +41,9 @@ func main() {
 
 	// Convert to internal config
 	cfg := config.New()
-	log.Info(opts.OutputDirectory)
 	cfg.Values = viper.AllSettings()
-	if len(opts.OutputDirectory) == 0 {
-		cfg.OutputDirectory = "./output"
-	} else {
-		cfg.OutputDirectory = opts.OutputDirectory
-	}
+	cfg.OutputDirectory = opts.OutputDirectory
 
-	log.Info(cfg.OutputDirectory)
 	renderer, err := renderer.NewRendererFromConfig(cfg)
 
 	templater := app.NewApp(renderer)

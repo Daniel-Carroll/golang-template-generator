@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"path/filepath"
 
@@ -48,8 +49,10 @@ func (r Renderer) Render() error {
 }
 
 func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
+
+	// Check if path is a directory
 	if d.IsDir() {
-		log.Info("Directory Path: ", path)
+
 		tpl, err := pongo2.FromString(path)
 		if err != nil {
 			return err
@@ -59,8 +62,6 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-
-		log.Info("Output:", out)
 
 		err = os.MkdirAll(filepath.Join(r.Config.OutputDirectory, out), 0755)
 		if err != nil {
@@ -78,7 +79,14 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 			return err
 		}
 
-		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, path), []byte(out), 0755)
+		trimmedPath := trimOutputPath(path)
+
+		log.Info("Untrimmed Path")
+		log.Info(path)
+
+		log.Info("Trimmed Path")
+		log.Info(trimmedPath)
+		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, trimmedPath), []byte(out), 0755)
 		if err != nil {
 			return err
 		}
@@ -97,6 +105,6 @@ func createDirectory(path string, permissions fs.FileMode) error {
 }
 
 // Remove the template part of the path when creating directory
-func trimOutputPath() {
-
+func trimOutputPath(path string) string {
+	return strings.Replace(path, "/_", "/", 1)
 }
