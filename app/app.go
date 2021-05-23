@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Daniel-Carroll/golang-template-generator/interfaces"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/heb-engineering/templatr/interfaces"
 )
 
 var ErrShutdown = fmt.Errorf("application was shutdown gracefully")

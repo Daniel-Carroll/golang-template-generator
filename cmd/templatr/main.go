@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
+	"github.com/Daniel-Carroll/golang-template-generator/app"
+	"github.com/Daniel-Carroll/golang-template-generator/config"
+	"github.com/Daniel-Carroll/golang-template-generator/renderer"
 	"github.com/jessevdk/go-flags"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gitlab.com/heb-engineering/templatr/app"
-	"gitlab.com/heb-engineering/templatr/config"
-	"gitlab.com/heb-engineering/templatr/renderer"
 )
 
 // options are command-line options that are provided by the user.

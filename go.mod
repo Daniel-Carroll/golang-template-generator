@@ -1,4 +1,4 @@
-module gitlab.com/heb-engineering/templatr
+module github.com/Daniel-Carroll/golang-template-generator
 
 go 1.16
 

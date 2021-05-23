@@ -8,9 +8,9 @@ import (
 
 	"path/filepath"
 
+	"github.com/Daniel-Carroll/golang-template-generator/config"
 	"github.com/flosch/pongo2"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/heb-engineering/templatr/config"
 )
 
 var ErrShutdown = fmt.Errorf("application was shutdown gracefully")
