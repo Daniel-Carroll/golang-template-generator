@@ -1,6 +1,6 @@
 {
-    "module": "poop-module",
-    "repoUrl": "github.com/Daniel-Carroll/repo-name",
-    "app_name": "cool-app",
-    "namespace": "cool"
+    "module": "example-module",
+    "repoUrl": "github.com/Daniel-Carroll/example-repo",
+    "app_name": "example-app",
+    "namespace": "example"
 }

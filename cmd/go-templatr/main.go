@@ -43,6 +43,7 @@ func main() {
 	cfg := config.New()
 	cfg.Values = viper.AllSettings()
 	cfg.OutputDirectory = opts.OutputDirectory
+	cfg.TemplateName = opts.TemplateName
 
 	renderer, err := renderer.NewRendererFromConfig(cfg)
 

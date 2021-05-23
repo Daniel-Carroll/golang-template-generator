@@ -63,6 +63,9 @@ func (r Renderer) renderFile(path string, d os.DirEntry, err error) error {
 			return err
 		}
 
+		log.Info("Output")
+		log.Info(out)
+
 		err = os.MkdirAll(filepath.Join(r.Config.OutputDirectory, out), 0755)
 		if err != nil {
 			return err
@@ -107,4 +110,8 @@ func createDirectory(path string, permissions fs.FileMode) error {
 // Remove the template part of the path when creating directory
 func trimOutputPath(path string) string {
 	return strings.Replace(path, "/_", "/", 1)
+}
+
+func trimDirectoryPath(path string) string {
+	return strings.Replace(path, "templates/", "", 1)
 }
