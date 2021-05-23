@@ -31,10 +31,7 @@ func NewRendererFromConfig(cfg config.Config) (Renderer, error) {
 
 func (r Renderer) Render() error {
 	// Application runtime code goes here
-	log.Info("Template Name: ", r.Config.TemplateName)
 	baseTemplateFilepath := filepath.Join("templates", r.Config.TemplateName)
-	baseOutputFilepath := filepath.Join(r.Config.OutputDirectory)
-	log.Info("Base Output", baseOutputFilepath)
 
 	err := filepath.WalkDir(baseTemplateFilepath, r.renderFile)
 
@@ -87,7 +84,6 @@ func (r Renderer) renderFile(templatePath string, d os.DirEntry, err error) erro
 		}
 
 		trimmedPath := strings.Replace(pathOut, "/_", "/", 1)
-		log.Info(trimmedPath)
 
 		err = ioutil.WriteFile(filepath.Join(r.Config.OutputDirectory, trimmedPath), []byte(out), 0755)
 		if err != nil {
