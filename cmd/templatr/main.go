@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/jessevdk/go-flags"
@@ -27,13 +26,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	contextName := opts.TemplateName + "-context"
 	// Load context from YAML
-	viper.SetConfigName("context")
+	viper.SetConfigName(contextName)
 	viper.SetConfigType("json")
 	viper.AddConfigPath("./")
 	err = viper.ReadInConfig() // Find and read the config file
 	if err != nil {            // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		log.Info("Context with name ", contextName, " does not exist, defaulting to context.json")
+		viper.SetConfigName("context")
+		err = viper.ReadInConfig()
+		if err != nil {
+			log.Fatal("You fool, there is no valid context file. Please add a valid context.json and try again.")
+		}
 	}
 
 	if len(opts.TemplateName) == 0 {
